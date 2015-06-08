@@ -39,6 +39,15 @@ body {
 .reveal .header {
   padding: 15px; }
 
+.reveal .footer {
+  bottom: 5px;
+  position: absolute;
+  padding: 15px;
+  text-align: center;
+  width: 100%;
+  font-family: 'Lato', sans-serif;
+  color: #0088cc; }
+
 .reveal .slides section .fragment {
   opacity: 0;
   visibility: hidden;
