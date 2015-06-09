@@ -68,7 +68,7 @@
 					## Products
 
 					- SDK: C, java, .net
-					- Widgets: IOS, Android (and soon windowns 10)
+					- Widgets: IOS, Android (and soon windows 10)
 					- Services: Recognition with REST or WebSockets
 
 					[Visit our dev-portal: https://dev.myscript.com/](https://dev.myscript.com/ "Visit dev-portal!")
@@ -113,30 +113,49 @@
 				</section>
 
 				<section data-markdown>
-					## Best practices
+					## Best practices</h3>
 
-					 - One process per container
-					 - Pipe the process stdout/stderr to logger otherwise mount a /dev/log volume (deprecated with --log-driver since 1.6)
-					 - In Production, use  **`docker run --net=host ...`**
-					 - Do not believe that it's safe
+					- One process per container
+					- Pipe the process stdout/stderr to logger otherwise mount a /dev/log volume (deprecated with --log-driver since 1.6)
+					- In Production, use  **`docker run --net=host ...`**
 				</section>
 
 				<section data-markdown>
-					## Docker for testing 1/3
+					## **Do not believe it's secured!!!**
+					![Docker disaster](images/docker-disaster.GIF "Docker disaster")
+				</section>
 
-					- Custom image for faking AWS tools (ELB, SMTP)
-					- Can coverage complex tests (Email)
+
+				<section data-markdown>
+					## Docker and test
+
+					<p>It's light, fast and everything is scriptable!</p>
+				</section>
+
+
+				<section data-markdown>
+					## Example: Mailing testing
+
+					![AWS](images/AWS.svg "AWS")
 				</section>
 
 				<section data-markdown>
-					## Docker for testing 2/3
+					## Faking AWS services 1/2
 
-					- Launch the environment with a docker container embedding a smtp server AND a pop3
-					- The test do an action supposed to send an email
+					- Creating a smtp/pop3 container
+					- Creating AWS/ELB fake with HAProxy
 				</section>
 
 				<section data-markdown>
-					## Test with Makefile
+					## Faking AWS services 2/2
+
+					![mailtesing](images/mailtesting.svg "MailTesting")
+				</section>
+
+
+
+				<section data-markdown>
+					## Automatic tests with a Makefile
 
 					```
 					_waittcp:
@@ -191,37 +210,52 @@
 
 				<section data-markdown>
 					## Builds
-					The jenkins is deployed in a docker!
-					Everybody can test the jenkins on his dev desktop!
 
+					 - The jenkins is deployed in a docker container!
+					 - Everybody can test the jenkins on his workstation!
+				</section>
 
+				<section data-markdown>
+					<script type="text/template">
+					## Builds
+
+					But wait ... docker in docker?
+
+					mount the volume: /var/run/docker.sock:/var/run/docker.sock  <!-- .element: class="fragment" data-fragment-index="1" -->
+
+					![Inception](images/inception.jpg "Inception")
+					</script>
 				</section>
 
 				<section data-markdown>
 					## And What about the production?
 
 					Only one AMI! The EC2 AMI is a stable debian with:
-					- docker.io
-					- jq/awscli
-					- ...
+					 - docker.io
+					 - jq
+					 - awscli
 
-					An EC2 instance run a script injected through user-data
+					EC2 instances run a script injected through user-data, configured with tags
+					 - clean containers and images
+					 - docker load from S3 repository
+					 - launch dockers with environment variables
+
 				</section>
-
-
 
 				<section data-markdown>
 					## Monitoring
 
-					the user-data script create cronjobs that
-					- chec
-					Only one AMI! The EC2 AMI is a stable debian with:
-					- docker.io
-					- jq/awscli
-					- ...
-
-					An EC2 instance run a script injected through user-data
+					User-data scripts create cron jobs to
+					- check host states (disk, cpu etc.)
+					- docker containers status
+					- launch periodic backups (it's also a docker)
 				</section>
+
+				<section data-markdown>
+					<h2>Thank you!</h2>
+
+				</section>
+
 			</div>
 
 			<div class="footer">MyScript - Mathieu Ruellan</div>
