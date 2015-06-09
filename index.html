@@ -122,7 +122,7 @@
 
 				<section data-markdown>
 					## **Do not believe it's secured!!!**
-					![Docker disaster](images/docker-disaster.GIF "Docker disaster")
+					![Docker disaster](images/docker-disaster.GIF "Docker disaster") <!-- .element: class="stretch" -->
 				</section>
 
 
@@ -221,7 +221,10 @@
 
 					But wait ... docker in docker?
 
-					mount the volume: /var/run/docker.sock:/var/run/docker.sock  <!-- .element: class="fragment" data-fragment-index="1" -->
+					Connect the client on the host. Mount the volume with : <!-- .element: class="fragment" data-fragment-index="1" -->
+
+					**`-v /var/run/docker.sock:/var/run/docker.sock`** <!-- .element: class="fragment" data-fragment-index="1" -->
+
 
 					![Inception](images/inception.jpg "Inception")
 					</script>
