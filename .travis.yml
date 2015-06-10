@@ -1,5 +1,12 @@
 language: node_js
 node_js:
-  - 0.10
+- 0.1
 before_script:
-  - npm install -g grunt-cli
+- npm install -g grunt-cli
+deploy:
+  provider: releases
+  api_key:
+    secure: L2A6aU70N2SEWUXSquT29wMKP49QxUqYP2RFNYUH9z8sagBtGZAS2PKeR7Yfq1p/vtsY3yg6v2k7WKflXHxx3XM0hGTIWB9WEHNiOkPqNemBbSY0VV9rEtOSmmj8Qm2T5cUHEJt9LHkxGCR95jF24xp5f2k0O4pxTc/ISXkFJmoIZUYNaghXJJx9A+seBxYYcfByz8In2waTN5cUYfEu7WNl7YWvXUzZlQcXeFJCGhz1ve/hlSnCkpET6QrSBkd+q3N7APsnbmoFytcp200Cj0qr1axyzjNDodtS/bLKDFZNPzDDtwxtMxsNoBfT9ymlqOPOFAQfuD5s54pZh9rHzsg1+eDW4HvVh39UNokpcHhDJpZBu+V7JpeQqMHvfPswdrK08xdkQEBwqaOan1Wbjyaw/MV6kQtTIgQUXRI+RIA3eiVWTnSo9UUAo8baoRDe5UIVAKV+9ak5/mIGVR600hBMMk1ULGWgKJhNE3ky/g1I0zdX825feNI7pfgZr8Ll5xL8FxVmm18sSawRrNeqCidapADxjFfpkjrgeRqhOhZ3Q6/GrHxRQQ27WqIBZSgedpX9fba8h6uquobvQP/CbAiAZewHT33RzzwALkX11ZB+rTUCA3j9+7NZjXBRNDBVg7sWuzlOyzbdkKB+bzoI7czg7LeUAgUZC60IKIf6uCA=
+  file: mathieuruellan-docker-talk.zip
+  on:
+    repo: mathieuruellan/myscript-docker-talk

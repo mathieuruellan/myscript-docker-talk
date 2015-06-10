@@ -101,7 +101,7 @@ module.exports = function(grunt) {
 		},
 
 		zip: {
-			'reveal-js-presentation.zip': [
+			'mathieuruellan-docker-talk.zip': [
 				'index.html',
 				'css/**',
 				'js/**',
