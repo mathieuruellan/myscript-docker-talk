@@ -10,3 +10,4 @@ deploy:
   file: mathieuruellan-docker-talk.zip
   on:
     repo: mathieuruellan/myscript-docker-talk
+    tags: true 
