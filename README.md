@@ -4,9 +4,9 @@ HTML Presentation about docker and MyScript WebServices.
 
 Done with [RevealJS](http://lab.hakim.se/reveal-js/#/)
 
-## Get it
+## Use it
 
-Download last [release](https://github.com/mathieuruellan/myscript-docker-talk/releases)
+[http://mathieuruellan.github.io/myscript-docker-talk/](http://mathieuruellan.github.io/myscript-docker-talk/)
 
 
 ## Local installation
