@@ -7,3 +7,6 @@ node_modules/
 .sass-cache
 css/reveal.min.css
 js/reveal.min.js
+mathieuruellan-docker-talk.zip
+css/reveal.css
+css/theme/*.css
