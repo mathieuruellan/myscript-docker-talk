@@ -106,14 +106,14 @@
 				<section data-markdown>
 					## Deliveries are Docker Images
 
-					- Environment agnostic (thanks to environement production)
-					- Build result are pushed in a local registry (it's also a docker container)
-					- Production deployment on private S3 with **docker save** and **docker load**
+					- Environment agnostic (thanks to environment variables)
+					- Build results are pushed in a local registry (it's also a docker container)
+					- Production deployment on private S3 with **`docker save`** and **`docker load`**
 					- Possibility to run a production-like environment with fig/docker-compose
 				</section>
 
 				<section data-markdown>
-					## Best practices</h3>
+					## Best practices
 
 					- One process per container
 					- Pipe the process stdout/stderr to logger otherwise mount a /dev/log volume (deprecated with --log-driver since 1.6)
