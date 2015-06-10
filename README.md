@@ -6,7 +6,7 @@ Done with [RevealJS](http://lab.hakim.se/reveal-js/#/)
 
 ## Get it
 
- Download last release on `https://github.com/mathieuruellan/myscript-docker-talk/releases`
+Download last [release](https://github.com/mathieuruellan/myscript-docker-talk/releases)
 
 
 ## Local installation
@@ -20,4 +20,3 @@ Done with [RevealJS](http://lab.hakim.se/reveal-js/#/)
 
 MIT licensed
 
-Copyright (C) 2015 Hakim El Hattab, http://hakim.se
