@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+- 0.10
+before_script:
+- npm install -g grunt-cli
+script: bash ./deploy.sh
+env:
+  global:
+  - GH_REF: "github.com/mathieuruellan/myscript-docker-talk.git"
+  - secure: "P3KtwzuSOqbsHowj1vfl+fVj8yoprcGAbi/itT3FxunPwdFxtdf+ipphg5XvQ3y8sy1TlTajIYOiX2UWVmaTNSxxJ/NgYP9ufeNPAhdcmP3sYumrj42Afn8vpFvW2TUBt5dsF8kuIQiUj7PhZJDhiMNW4dMFkDSAo9omgQrKev82cKfZuVY8qIKSHlEFu1jhKtzrkznt9oyu4rlGsULmB1mRLIwIoScEiO71M67VN5MbfxR5UJmXJ51KBmIDqqNJaTjSyZHvIiKtuunaawLZWrrFE716quk+CQRlkoCbehbS6xiZ3oit8Vl8i5dg2iByUitMvv2Qcd0S0Qdv84EJ+DQpFQsug7ElOCSk3PbtQ5t7O5r9ax1iDISewmU5C/r7StBlrVK8Nte/BzH4VHwDg2X6NVb6YMnoY71NdDn4F+eP/e5y+/6DG4YVyVMuDOWDyY+okauxlbL+PL8K97JJENio6LWbw7tm1kjwm9ByUDIj9y+WnU3C3hTm2eJyCuoeDjrmEC6X2zV0lJ5xuZ5dZvN06FLJbkPVVuEpnHJQzRUNWe2b+LK2+Q0RUgur6OOiRl+3gkaIsBsvlpDc7oyqoJBysSxfK0LfuQbdM6gpx2mYiEg3SACLt6xLlZQfZrOHTUMjgh0q/gUJmNb05xK6ZL/bMkr9C/FIr3q39nxwEAM="

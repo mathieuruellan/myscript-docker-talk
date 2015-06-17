@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Docker at MyScript</title>
+
+		<meta name="description" content="How we use docker in production and for test">
+		<meta name="author" content="Mathieu Ruellan">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/simple.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<div class="header">
+				<img src="images/logo-header@2x.png"/>
+			</div>
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section data-markdown>
+					## Docker in MyScript WebServices
+
+					<small>Mathieu Ruellan - https://github.com/mathieuruellan</small>
+
+				</section>
+
+				<section data-markdown>
+					## Activity
+
+					We are selling technology around handwriting recognition:
+					- Text
+					- Maths
+					- Shapes
+					- Music
+
+					[Visit our dev-portal: https://dev.myscript.com/](https://dev.myscript.com/ "Visit dev-portal!")
+
+				</section>
+
+				<section data-markdown>
+					## Products
+
+					- SDK: C, java, .net
+					- Widgets: IOS, Android (and soon windows 10)
+					- Services: Recognition with REST or WebSockets
+
+					[Visit our dev-portal: https://dev.myscript.com/](https://dev.myscript.com/ "Visit dev-portal!")
+
+				</section>
+
+				<section data-markdown>
+					## What we do with Docker?
+
+					- MyScript Cloud (online recognition)
+					- MyScript ATK (certificate provider for mobile apps embedding our widgets)
+					- Builds
+				</section>
+
+
+				<section data-markdown>
+					## Who is using Docker?
+
+					- developers
+					- testers
+					- production (AWS/EC2 environment)
+				</section>
+
+				<section data-markdown>
+					## What do we need in production?
+					- Backend
+					- DB (mongodb)
+					- SMTP relay (Postfix)
+					- HAProxy (load balancing)
+					- logger (rsyslog - elasticsearch/logstash/kibana)
+					- Varnish
+					- static content (nginx)
+				</section>
+
+				<section data-markdown>
+					## Deliveries are Docker Images
+
+					- Environment agnostic (thanks to environment variables)
+					- Build results are pushed in a local registry (it's also a docker container)
+					- Production deployment on private S3 with **`docker save`** and **`docker load`**
+					- Possibility to run a production-like environment with fig/docker-compose
+				</section>
+
+				<section data-markdown>
+					## Best practices
+
+					- One process per container
+					- Pipe the process stdout/stderr to logger otherwise mount a /dev/log volume (deprecated with --log-driver since 1.6)
+					- In Production, use  **`docker run --net=host ...`**
+				</section>
+
+				<section data-markdown>
+					## **Do not believe it's secured!!!**
+					![Docker disaster](images/docker-disaster.GIF "Docker disaster") <!-- .element: class="stretch" -->
+				</section>
+
+
+				<section data-markdown>
+					## Docker and test
+
+					<p>It's light, fast and everything is scriptable!</p>
+				</section>
+
+
+				<section data-markdown>
+					## Example: Mailing testing
+
+					![AWS](images/AWS.svg "AWS")
+				</section>
+
+				<section data-markdown>
+					## Faking AWS services 1/2
+
+					- Creating a smtp/pop3 container
+					- Creating AWS/ELB fake with HAProxy
+				</section>
+
+				<section data-markdown>
+					## Faking AWS services 2/2
+
+					![mailtesing](images/mailtesting.svg "MailTesting")
+				</section>
+
+
+
+				<section data-markdown>
+					## Automatic tests with a Makefile
+
+					```
+					_waittcp:
+						@echo -n "Waiting for TCP Port on IP:$(WAIT_IP):$(WAIT_PORT) " && \
+						CPT=0 && \
+						while ! nc -w 1 $(WAIT_IP) $(WAIT_PORT); do \
+							((CPT++)); \
+							if [ $$CPT -gt 60 ]; then \
+								echo "timeout"; \
+								exit 1; \
+							fi; \
+							sleep 1; \
+							echo -n .; \
+						done; \
+						echo " Found!"
+
+					_start-mailtest:
+						@echo -n "starting mailtest container. " && \
+						docker run $(DOCKER_MAILTEST_PARAMETERS) -d  -h test.myscript.com -e maildomain=myscript.com -e user=qawebservices:qawebservices,test1:test1,test2:test2,test3:test3 --name $(TEST_DOCKER_MAILTEST_INSTANCE_NAME) webtest:5000/myscript-webservices-mailtest:$(DOCKERTAG) && \
+						MAILTESTIP=$$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $(TEST_DOCKER_MAILTEST_INSTANCE_NAME)) && \
+						$(MAKE) WAIT_IP=$${MAILTESTIP} WAIT_PORT=110 _waittcp && \
+						$(MAKE) WAIT_IP=$${MAILTESTIP} WAIT_PORT=25 _waittcp
+
+					_start-license-volumes:
+						@echo -n "Starting license-7.0 volume. " && docker run -d --name $(TEST_DOCKER_LICENSE_7_0_INSTANCE_NAME) webtest:5000/myscript-cloud-volume-licensekey-7.0:$(DOCKERTAG)
+
+					_start-mongo-docker:
+						@echo -n "Starting mongo container. " && docker run $(DOCKER_MONGO_PARAMETERS) -d -h mongo --name $(TEST_DOCKER_MONGO_INSTANCE_NAME) mongo:2.6 --smallfiles --replSet "testreplset"
+						@MONGOIP=$$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $(TEST_DOCKER_MONGO_INSTANCE_NAME)) && \
+						$(MAKE) WAIT_IP=$${MONGOIP} WAIT_PORT=27017 _waittcp && \
+						echo "Initializing ReplicaSet." && \
+						docker exec $(TEST_DOCKER_MONGO_INSTANCE_NAME) mongo --quiet --eval "rs.initiate();" > /dev/null
+
+					_start-backend-docker:
+						@echo -n "Starting current version backend container. " && \
+						MAILTESTIP=$$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $(TEST_DOCKER_MAILTEST_INSTANCE_NAME)) && \
+						docker run \
+							$(DOCKER_BACKEND_PARAMETERS) \
+							-d \
+							--volumes-from $(TEST_DOCKER_LICENSE_7_0_INSTANCE_NAME) \
+							--link $(TEST_DOCKER_MONGO_INSTANCE_NAME):mongo \
+							-e "MYSCRIPT_CLOUD_LOGGER_HOST=" \
+							-e "MYSCRIPT_CLOUD_SMTP_SERVER=$${MAILTESTIP}" \
+							-e "MYSCRIPT_CLOUD_SEND_EMAIL_TO_USER=false" \
+							-e "MYSCRIPT_CLOUD_ACTIVATION_EMAIL_QAWEBERVICES=qawebservices@myscript.com" \
+							--name $(TEST_DOCKER_BACKEND_INSTANCE_NAME) \
+							webtest:5000/myscript-cloud-backend:$(DOCKERTAG)
+						@BACKENDIP=$$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $(TEST_DOCKER_BACKEND_INSTANCE_NAME)) && \
+						$(MAKE) WAIT_IP=$${BACKENDIP} WAIT_PORT=8894 _waittcp
+					```
+				</section>
+
+				<section data-markdown>
+					## Builds
+
+					 - The jenkins is deployed in a docker container!
+					 - Everybody can test the jenkins on his workstation!
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+					## Builds
+
+					But wait ... docker in docker?
+
+					Connect the client on the host. Mount the volume with : <!-- .element: class="fragment" data-fragment-index="1" -->
+
+					**`-v /var/run/docker.sock:/var/run/docker.sock`** <!-- .element: class="fragment" data-fragment-index="1" -->
+
+
+					![Inception](images/inception.jpg "Inception")
+					</script>
+				</section>
+
+				<section data-markdown>
+					## And What about the production?
+
+					Only one AMI! The EC2 AMI is a stable debian with:
+					 - docker.io
+					 - jq
+					 - awscli
+
+					EC2 instances run a script injected through user-data, configured with tags
+					 - clean containers and images
+					 - docker load from S3 repository
+					 - launch dockers with environment variables
+
+				</section>
+
+				<section data-markdown>
+					## Monitoring
+
+					User-data scripts create cron jobs to
+					- check host states (disk, cpu etc.)
+					- docker containers status
+					- launch periodic backups (it's also a docker)
+				</section>
+
+				<section data-markdown>
+					## Difficulties
+
+					- Docker comes with a DevOps approach. Changing actual practices
+					- Workstation must be linux
+					- New tool to learn (testers have to get IT knowledge)
+						- Tools to help them
+					- Can't migrate everything in one step, still working with the past
+				</section>
+
+				<section data-markdown>
+					## Benefits
+
+					- Force people to have good practices
+					  - provide something testable
+					  - no more 'preprod' for testers
+
+					- Update deployment facilities
+					- Less stress for IT
+
+				</section>
+
+				<section data-markdown>
+					<h2>Thank you!</h2>
+
+				</section>
+
+			</div>
+
+			<div class="footer">MyScript - Mathieu Ruellan</div>
+
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
